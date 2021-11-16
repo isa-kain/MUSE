@@ -1,0 +1,26 @@
+The muse_zap.py script contains the zap.py code  by
+Soto et al. (2016), version 2.1.dev
+
+The original code has been changed in order to be compatible with the reflex
+environment.
+
+Dependencies:
+-------------
+Java 1.8 (or higher)
+
+Reflex 2.9 (or higher)
+
+Python 2.7
+   Numpy (1.6.0 or later)
+   Astropy (1.0 or later)
+   SciPy (0.13.3 or later)
+   Scikit-learn
+
+or , instead of Python 2.7:
+Python 3.5 or higher
+   Numpy (1.6.0 or later)
+   Astropy (2.0 or later)
+   SciPy (0.18.1 or later)
+   Scikit-learn
+
+If Python 3.x is installed, then Reflex 2.10 is required (not 2.9)

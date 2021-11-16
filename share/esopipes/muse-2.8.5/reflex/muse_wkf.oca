@@ -1,0 +1,1591 @@
+// Version 2.0
+// This file contains the configuration of the Reflex Data Organizer
+// for the MUSE workflow
+//
+// This rule file defines classification, association and
+// action rules for the MUSE reflex workflow.
+//
+// They can be used with observations taken with and without AO mode
+//
+
+//
+// Raw calibration data
+//
+
+if DPR.CATG == "CALIB" and INSTRUME == "MUSE" and
+    DPR.TYPE == "BIAS" and
+    DPR.TECH == "IFU" and TPL.NEXP >= 3 then
+{
+    REFLEX.CATG = "BIAS";
+}
+
+
+if DPR.CATG == "CALIB" and INSTRUME == "MUSE" and
+    DPR.TYPE == "DARK" and
+    DPR.TECH == "IFU"  and TPL.NEXP >= 3 then
+{
+    REFLEX.CATG = "DARK";
+}
+
+
+// Note: Add boolean property INS.OPTI1.FILTER to select calibrations only
+//       depending on wether the nominal or the extended mode has been used,
+//       independent of whether AO was in use or not. This is to allow
+//       reusing calibrations taken with NOAO also for AO frames, while
+//       still distinguishing between nominal and extended mode frames.
+//
+// See association rules appearing in the action definitions.
+//
+
+// Note: if you need to associate to a file a calibration with the
+// same configuration (AO/noAO, Nominal/Extended, Wide/Narrow) you request
+//         and inputFile.INS.MODE==INS.MODE
+// if you need to associate to a file a calibration with just the same
+// wavelenght range and hte same field range, you request:
+//         and inputFile.INS.OPTI1.FILTER==INS.OPTI1.FILTER  (for the w-range)
+//         and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME      (for the field size)
+//
+
+if DPR.CATG == "CALIB" and INSTRUME == "MUSE" and
+    (DPR.TYPE like "%FLAT%" and DPR.TYPE like "%LAMP%") and
+    DPR.TECH == "IFU"  and TPL.NEXP >= 3 then
+{
+    REFLEX.CATG = "FLAT";
+    // DO.CATG = "FLAT";
+    INS.OPTI1.FILTER = INS.OPTI1.NAME like "Blue%";
+}
+
+
+if DPR.CATG == "CALIB" and INSTRUME == "MUSE" and
+    (DPR.TYPE like "%FLAT%" and DPR.TYPE like "%ILLUM%")  and
+    DPR.TECH == "IFU" then
+{
+    REFLEX.CATG = "ILLUM";
+}
+
+
+if DPR.CATG == "CALIB" and INSTRUME == "MUSE" and
+    (DPR.TYPE like "%FLAT%" and DPR.TYPE like "%SKY%") and
+    DPR.TECH == "IFU" and TPL.NEXP >= 3   then
+{
+    REFLEX.CATG = "SKYFLAT";
+   // PRO.CATG = "SKYFLAT";
+    // DO.CATG = "SKYFLAT";
+    INS.OPTI1.FILTER = INS.OPTI1.NAME like "Blue%";
+}
+
+
+if DPR.CATG == "CALIB" and INSTRUME == "MUSE" and
+    DPR.TYPE == "WAVE,LSF" and
+    DPR.TECH == "IFU"  then
+{
+    REFLEX.CATG = "ARC_LSF";
+   // PRO.CATG = "ARC_LSF";
+    // DO.CATG = "ARC_LSF";
+    INS.OPTI1.FILTER = INS.OPTI1.NAME like "Blue%";
+}
+
+if DPR.CATG == "CALIB" and INSTRUME == "MUSE" and
+    DPR.TYPE == "WAVE" and
+    DPR.TECH == "IFU"  then
+{
+    REFLEX.CATG = "ARC";
+    // DO.CATG = "ARC";
+    INS.OPTI1.FILTER = INS.OPTI1.NAME like "Blue%";
+}
+
+
+if (DPR.CATG == "CALIB" or DPR.CATG == "SCIENCE") and INSTRUME == "MUSE" and
+    DPR.TYPE == "SKY" and
+    DPR.TECH == "IFU" then
+{
+    REFLEX.CATG = "SKY";
+    // DO.CATG = "SKY";
+    INS.OPTI1.FILTER = INS.OPTI1.NAME like "Blue%";
+}
+
+
+if DPR.CATG == "CALIB" and INSTRUME == "MUSE" and
+    DPR.TYPE == "STD" and
+    DPR.TECH == "IFU" then
+{
+    REFLEX.CATG = "STD";
+    // DO.CATG = "STD";
+    INS.OPTI1.FILTER = INS.OPTI1.NAME like "Blue%";
+}
+
+
+if DPR.CATG == "CALIB" and INSTRUME == "MUSE" and
+    DPR.TYPE == "ASTROMETRY" and
+    DPR.TECH == "IFU" then
+{
+    REFLEX.CATG = "ASTROMETRY";
+   // PRO.CATG = "ASTROMETRY";
+    // DO.CATG = "ASTROMETRY";
+    INS.OPTI1.FILTER = INS.OPTI1.NAME like "Blue%";
+}
+
+
+//
+// Raw observation data
+//
+
+if DPR.CATG == "SCIENCE" and INSTRUME == "MUSE" and
+    DPR.TYPE == "OBJECT" and
+    DPR.TECH == "IFU" then
+{
+    REFLEX.CATG = "OBJECT";
+    REFLEX.TARGET = "T";
+    INS.OPTI1.FILTER = INS.OPTI1.NAME like "Blue%";
+}
+
+if DPR.CATG == "CALIB" and INSTRUME == "MUSE" and
+    DPR.TYPE like "%TELLU%" and
+    DPR.TECH == "IFU" then
+{
+    REFLEX.CATG = "OBJECT";
+    REFLEX.TARGET = "T";
+    INS.OPTI1.FILTER = INS.OPTI1.NAME like "Blue%";
+}
+
+//
+// Static calibration data
+//
+
+if PRO.CATG == "BADPIX_TABLE" and INSTRUME == "MUSE" and USERTBL is undefined then
+{
+    PRO.CATG = "BADPIX_TABLE";
+    REFLEX.CATG = "BADPIX_TABLE";
+}
+
+if PRO.CATG == "BADPIX_TABLE" and INSTRUME == "MUSE" and USERTBL == "SCIENCE_BP_TABLE" then
+{
+    PRO.CATG = "SCIENCE_BP_TABLE";
+    REFLEX.CATG = "BADPIX_TABLE";
+}
+
+
+
+if PRO.CATG == "LINE_CATALOG" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "LINE_CATALOG";
+}
+
+
+if PRO.CATG == "EXTINCT_TABLE" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "EXTINCT_TABLE";
+}
+
+
+if PRO.CATG == "FILTER_LIST" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "FILTER_LIST";
+}
+
+
+if PRO.CATG == "STD_FLUX_TABLE" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "STD_FLUX_TABLE";
+}
+
+
+if PRO.CATG == "ASTROMETRY_WCS" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "ASTROMETRY_WCS";
+//    PRO.CATG ="ASTROMETRY_WCS";
+}
+
+if PRO.CATG == "ASTROMETRY_REFERENCE" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "ASTROMETRY_REFERENCE";
+}
+
+
+if PRO.CATG == "OUTPUT_WCS" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "OUTPUT_WCS";
+}
+
+
+if PRO.CATG == "GEOMETRY_TABLE" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "GEOMETRY_TABLE";
+}
+
+
+if PRO.CATG == "SKY_LINES" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "SKY_LINES";
+}
+
+
+if PRO.CATG == "LSF_PROFILE" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "LSF_PROFILE";
+    INS.OPTI1.FILTER = INS.OPTI1.NAME like "Blue%";
+}
+
+
+if PRO.CATG == "NONLINEARITY_GAIN" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "NONLINEARITY_GAIN";
+}
+
+
+if PRO.CATG == "VIGNETTING_MASK" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "VIGNETTING_MASK";
+}
+
+if PRO.CATG == "RAMAN_LINES" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "RAMAN_LINES";
+    REFLEX.TARGET = "T";
+}
+
+
+//
+// Recipe products
+//
+
+// muse_bias
+
+if PRO.CATG == "MASTER_BIAS" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "MASTER_BIAS";
+}
+
+
+// muse_dark
+
+if PRO.CATG == "MASTER_DARK" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "MASTER_DARK";
+}
+
+
+// muse_flat
+
+if PRO.CATG == "MASTER_FLAT" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "MASTER_FLAT";
+   INS.OPTI1.FILTER = INS.OPTI1.NAME like "Blue%";
+}
+
+
+if PRO.CATG == "TRACE_TABLE" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "TRACE_TABLE";
+    INS.OPTI1.FILTER = INS.OPTI1.NAME like "Blue%";
+}
+
+if PRO.CATG == "TRACE_SAMPLES" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "TRACE_SAMPLES";
+    INS.OPTI1.FILTER = INS.OPTI1.NAME like "Blue%";
+}
+
+if PRO.CATG == "TRACE_TABLE" and PIPEFILE == "TRACE_TABLE-06.fits" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "TRACE_TABLE_06";
+    INS.OPTI1.FILTER = INS.OPTI1.NAME like "Blue%";
+}
+
+
+
+// muse_wavecal
+
+if PRO.CATG == "WAVECAL_TABLE" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "WAVECAL_TABLE";
+    INS.OPTI1.FILTER = INS.OPTI1.NAME like "Blue%";
+}
+
+
+//if PRO.CATG == "LSF_TABLE_WKF" and INSTRUME == "MUSE" then
+//{
+//    REFLEX.CATG = "LSF_TABLE_WKF";
+//    PRO.CATG = "LSF_TABLE_WKF";
+//    INS.OPTI1.FILTER = INS.OPTI1.NAME like "Blue%";
+//}
+
+
+
+// muse_geometry
+
+if PRO.CATG == "GEOMETRY_TABLE" then
+{
+    REFLEX.CATG = "GEOMETRY_TABLE";
+    INS.OPTI1.FILTER = INS.OPTI1.NAME like "Blue%";
+}
+
+
+// muse_twilight
+
+if PRO.CATG == "TWILIGHT_CUBE" then
+{
+    REFLEX.CATG = "TWILIGHT_CUBE";
+    INS.OPTI1.FILTER = INS.OPTI1.NAME like "Blue%";
+}
+
+
+// muse_scibasic
+
+if PRO.CATG == "PIXTABLE_OBJECT" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "PIXTABLE_OBJECT";
+    INS.OPTI1.FILTER = INS.OPTI1.NAME like "Blue%";
+}
+
+if PRO.CATG == "PIXTABLE_SKY" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "PIXTABLE_SKY";
+    INS.OPTI1.FILTER = INS.OPTI1.NAME like "Blue%";
+}
+
+if PRO.CATG == "PIXTABLE_STD" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "PIXTABLE_STD";
+    INS.OPTI1.FILTER = INS.OPTI1.NAME like "Blue%";
+}
+
+if PRO.CATG == "PIXTABLE_ASTROMETRY" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "PIXTABLE_ASTROMETRY";
+    INS.OPTI1.FILTER = INS.OPTI1.NAME like "Blue%";
+}
+
+
+// muse_standard
+
+if PRO.CATG == "STD_RESPONSE" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "STD_RESPONSE";
+    INS.OPTI1.FILTER = INS.OPTI1.NAME like "Blue%";
+    CALTYPE = "MASTER";
+}
+
+if PRO.CATG == "STD_TELLURIC" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "STD_TELLURIC";
+    INS.OPTI1.FILTER = INS.OPTI1.NAME like "Blue%";
+    CALTYPE = "MASTER";
+}
+
+
+// muse_create_sky
+
+if PRO.CATG == "SKY_LINES_WKF" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "SKY_LINES_WKF";
+    PRO.CATG = "SKY_LINES_WKF";
+    INS.OPTI1.FILTER = INS.OPTI1.NAME like "Blue%";
+}
+
+if PRO.CATG == "SKY_CONTINUUM_WKF" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "SKY_CONTINUUM_WKF";
+    PRO.CATG = "SKY_CONTINUUM_WKF";
+    INS.OPTI1.FILTER = INS.OPTI1.NAME like "Blue%";
+}
+
+if PRO.CATG == "SKY_MASK" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "SKY_MASK";
+    PRO.CATG = "SKY_MASK";
+    INS.OPTI1.FILTER = INS.OPTI1.NAME like "Blue%";
+}
+
+
+// muse_astrometry
+
+if PRO.CATG == "ASTROMETRY_WCS_WKF" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "ASTROMETRY_WCS_WKF";
+    PRO.CATG = "ASTROMETRY_WCS_WKF";
+    INS.OPTI1.FILTER = INS.OPTI1.NAME like "Blue%";
+}
+
+
+// muse_scipost
+
+if PRO.CATG == "DATACUBE_FINAL" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "DATACUBE_FINAL";
+    PRO.CATG = "DATACUBE_FINAL";
+}
+
+if PRO.CATG == "PIXTABLE_REDUCED" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "PIXTABLE_REDUCED";
+    PRO.CATG  = "PIXTABLE_REDUCED";
+    REFLEX.TARGET = "T";
+}
+
+if PRO.CATG == "IMAGE_FOV" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "IMAGE_FOV";
+    PRO.CATG = "IMAGE_FOV";
+}
+
+// muse_exp_align
+
+if PRO.CATG == "SOURCE_LIST" and INSTRUME == "MUSE" then
+{
+    REFLEX.CATG = "SOURCE_LIST";
+    PRO.CATG = "SOURCE_LIST";
+}
+
+//
+// Reflex workflow event rules
+//
+
+minRet=3;
+select execute(muse_bias) from inputFiles
+    where REFLEX.CATG == "BIAS"  group by TPL.START as (TPL_A, tpl);
+
+minRet=3;
+select execute(muse_dark) from inputFiles
+    where REFLEX.CATG == "DARK" group by TPL.START as (TPL_A, tpl);
+
+minRet=3;
+select execute(muse_flat) from inputFiles
+    where REFLEX.CATG == "FLAT"  group by TPL.START as (TPL_A, tpl);
+
+minRet=9;
+select execute(muse_wave) from inputFiles
+    where REFLEX.CATG == "ARC"  group by TPL.START as (TPL_A, tpl);
+
+minRet=45;
+select execute(muse_lsf) from inputFiles
+    where REFLEX.CATG == "ARC_LSF"  group by TPL.START as (TPL_A, tpl);
+
+//minRet=3;
+//select execute(muse_skyflat) from inputFiles
+//    where REFLEX.CATG == "SKYFLAT"  group by TPL.START as (TPL_A, tpl);
+
+minRet=3;
+select execute(muse_twilight) from inputFiles
+    where REFLEX.CATG == "SKYFLAT"  group by TPL.START as (TPL_A, tpl);
+
+minRet=0;
+select execute(muse_standard) from inputFiles
+    where REFLEX.CATG == "STD" group by TPL.START as (TPL_A, tpl);
+
+select execute(muse_sky) from inputFiles
+//    where REFLEX.CATG == "SKY" group by ARCFILE as (TPL_A, tpl);
+    where REFLEX.CATG == "SKY" group by ARCFILE as (TPL_A, tpl);
+
+select execute(muse_astrometry) from inputFiles
+    where REFLEX.CATG == "ASTROMETRY" group by TPL.START as (TPL_A, tpl);
+
+//minRet=2;
+//select execute(muse_exp_align) from inputFiles
+//    where REFLEX.CATG == "IMAGE_FOV" group by OBS.TARG.NAME, INS.MODE as (TPL_A, combined_cubes);
+
+select execute(muse_science) from inputFiles
+    where REFLEX.CATG == "OBJECT" group by ARCFILE;
+
+//select execute(muse_science) from inputFiles
+//    where REFLEX.CATG == "OBJECT" group by TPL.START as (TPL_A, tpl);
+
+//select execute(muse_exp_combine) from inputFiles
+//    where REFLEX.CATG == "PIXTABLE_REDUCED" group by OBS.TARG.NAME, INS.MODE;
+
+
+minRet=2;
+select execute(muse_exp_combine) from inputFiles
+    where REFLEX.CATG == "OBJECT"  group by OBS.TARG.NAME, INS.MODE as (TPL_A, combination);
+
+minRet=2;
+select execute(combine_pixtable) from inputFiles
+    where  REFLEX.CATG == "PIXTABLE_REDUCED" group by OBS.TARG.NAME, INS.MODE as (TPL_B, table_combination);
+
+
+
+// Reflex workflow action rules
+
+action muse_bias
+{
+    minRet = 0;
+    select file as BADPIX_TABLE from calibFiles where PRO.CATG == "BADPIX_TABLE"
+      //  and MJD-OBS < inputFile.MJD-OBS
+        and inputFile.INSTRUME==INSTRUME;
+
+    minRet = 0;
+    select file as NONLINEARITY_GAIN from calibFiles where REFLEX.CATG == "NONLINEARITY_GAIN"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.DET.BINX==DET.BINX
+        and inputFile.DET.BINY==DET.BINY
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME;
+
+    product MASTER_BIAS
+    {
+        REFLEX.CATG = "MASTER_BIAS";
+        PRO.CATG = "MASTER_BIAS";
+        CALTYPE = "WKF";
+    }
+
+    recipe muse_bias;
+}
+
+action muse_dark
+{
+    minRet = 1;
+    select file as MASTER_BIAS from calibFiles where REFLEX.CATG=="MASTER_BIAS"
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME and MJD-OBS > inputFile.MJD-OBS - 3
+        and MJD-OBS < inputFile.MJD-OBS + 3;
+
+
+    minRet = 0;
+    select file as BADPIX_TABLE from calibFiles where PRO.CATG == "BADPIX_TABLE"
+        and inputFile.INSTRUME==INSTRUME and MJD-OBS < inputFile.MJD-OBS;
+
+    minRet = 0;
+    select file as NONLINEARITY_GAIN from calibFiles where REFLEX.CATG == "NONLINEARITY_GAIN"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.DET.BINX==DET.BINX
+        and inputFile.DET.BINY==DET.BINY
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME;
+
+   product MASTER_DARK
+   {
+       REFLEX.CATG = "MASTER_DARK";
+       PRO.CATG = "MASTER_DARK";
+       CALTYPE = "WKF";
+   }
+
+   recipe muse_dark;
+}
+
+action muse_flat
+{
+    minRet = 0;
+    select file as BADPIX_TABLE from calibFiles where PRO.CATG == "BADPIX_TABLE"
+        and inputFile.INSTRUME==INSTRUME;
+
+    minRet = 0;
+    select file as NONLINEARITY_GAIN from calibFiles where REFLEX.CATG == "NONLINEARITY_GAIN"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.DET.BINX==DET.BINX
+        and inputFile.DET.BINY==DET.BINY
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME;
+
+    minRet = 1;
+    select file as MASTER_BIAS from calibFiles where REFLEX.CATG == "MASTER_BIAS"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 3 and MJD-OBS < inputFile.MJD-OBS + 3;
+
+    minRet = 0;
+    select file as MASTER_DARK from calibFiles where REFLEX.CATG == "MASTER_DARK"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 5 and MJD-OBS < inputFile.MJD-OBS + 5;
+
+
+    minRet = 0;
+    select file as TRACE_TABLE_06 from calibFiles where REFLEX.CATG == "TRACE_TABLE_06"
+         and inputFile.INSTRUME==INSTRUME
+         and inputFile.INS.MODE==INS.MODE
+         and inputFile.DET.READ.CURNAME==DET.READ.CURNAME;
+
+    product MASTER_FLAT
+    {
+        REFLEX.CATG = "MASTER_FLAT";
+        PRO.CATG = "MASTER_FLAT";
+        CALTYPE = "WKF";
+    }
+
+    product TRACE_TABLE
+    {
+        REFLEX.CATG = "TRACE_TABLE";
+        PRO.CATG = "TRACE_TABLE";
+        CALTYPE = "WKF";
+    }
+
+    product TRACE_SAMPLES
+    {
+        REFLEX.CATG = "TRACE_SAMPLES";
+        PRO.CATG = "TRACE_SAMPLES";
+        CALTYPE = "WKF";
+    }
+
+
+    recipe muse_flat;
+}
+
+
+action muse_wave
+{
+    minRet = 0;
+    select file as BADPIX_TABLE from calibFiles where PRO.CATG == "BADPIX_TABLE"
+        and inputFile.INSTRUME==INSTRUME;
+ 
+    minRet = 1; maxRet = 1;
+    select file as LINE_CATALOG from calibFiles where REFLEX.CATG == "LINE_CATALOG"
+        and inputFile.INSTRUME==INSTRUME;
+
+    minRet = 0;
+    select file as NONLINEARITY_GAIN from calibFiles where REFLEX.CATG == "NONLINEARITY_GAIN"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.DET.BINX==DET.BINX
+        and inputFile.DET.BINY==DET.BINY
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME;
+
+    minRet = 1;
+    select file as MASTER_BIAS from calibFiles where REFLEX.CATG == "MASTER_BIAS"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 3 and MJD-OBS < inputFile.MJD-OBS + 3;
+
+    minRet = 0;
+    select file as MASTER_DARK from calibFiles where REFLEX.CATG == "MASTER_DARK"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 5 and MJD-OBS < inputFile.MJD-OBS + 5;
+
+    minRet = 1;
+    select file as MASTER_FLAT from calibFiles where REFLEX.CATG == "MASTER_FLAT"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+        //and inputFile.INS.OPTI1.FILTER==INS.OPTI1.FILTE
+        //and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 3 and MJD-OBS < inputFile.MJD-OBS + 3;
+
+    minRet = 1;
+    select file as TRACE_TABLE from calibFiles where REFLEX.CATG == "TRACE_TABLE"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+        //and inputFile.INS.OPTI1.FILTER==INS.OPTI1.FILTER
+        //and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 3 and MJD-OBS < inputFile.MJD-OBS + 3;
+
+
+    product WAVECAL_TABLE
+    {
+        REFLEX.CATG = "WAVECAL_TABLE";
+        PRO.CATG = "WAVECAL_TABLE";
+        CALTYPE = "WKF";
+    }
+
+    product WAVECAL_RESIDUALS
+    {
+        REFLEX.CATG = "WAVECAL_RESIDUALS";
+        PRO.CATG = "WAVECAL_RESIDUALS";
+    }
+
+    product ARC_RESAMPLED
+    {
+        REFLEX.CATG = "WAVECAL_ARC_RESAMPLED";
+        PRO.CATG = "WAVECAL_ARC_RESAMPLED";
+    }
+
+    product WAVE_MAP
+    {
+        REFLEX.CATG = "WAVE_MAP";
+        PRO.CATG = "WAVE_MAP";
+    }
+
+ 
+   recipe muse_wavecal;
+}
+
+
+action muse_lsf
+{
+
+    minRet = 1;
+    select file as MASTER_BIAS from calibFiles where REFLEX.CATG == "MASTER_BIAS" and CALTYPE == "WKF"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 3 and MJD-OBS < inputFile.MJD-OBS + 3;
+
+    minRet = 0;maxRet = 1;
+    select file as MASTER_DARK from calibFiles where REFLEX.CATG == "MASTER_DARK" and CALTYPE == "WKF"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 5 and MJD-OBS < inputFile.MJD-OBS + 5;
+
+
+    minRet = 0;maxRet = 1;
+    select file as MASTER_FLAT from calibFiles where REFLEX.CATG == "MASTER_FLAT" and CALTYPE == "WKF"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+        //and inputFile.INS.OPTI1.FILTER==INS.OPTI1.FILTER
+        //and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 3 and MJD-OBS < inputFile.MJD-OBS + 3;
+
+      minRet = 1;maxRet = 1;
+      select file as TRACE_TABLE from calibFiles where REFLEX.CATG == "TRACE_TABLE" and CALTYPE == "WKF"
+          and inputFile.INSTRUME==INSTRUME
+          and inputFile.INS.MODE==INS.MODE
+          //and inputFile.INS.OPTI1.FILTER==INS.OPTI1.FILTER
+         // and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME
+          and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+          and MJD-OBS > inputFile.MJD-OBS - 3 and MJD-OBS < inputFile.MJD-OBS + 3;
+
+      minRet = 1;
+     select file as WAVECAL_TABLE from calibFiles where REFLEX.CATG == "WAVECAL_TABLE" and CALTYPE == "WKF"
+          and inputFile.INSTRUME==INSTRUME
+          and inputFile.INS.MODE==INS.MODE
+         // and inputFile.INS.OPTI1.FILTER==INS.OPTI1.FILTER
+         // and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME
+          and inputFile.DET.READ.CURID==DET.READ.CURID
+          and MJD-OBS > inputFile.MJD-OBS - 3 and MJD-OBS < inputFile.MJD-OBS + 3;
+
+
+    minRet = 1; maxRet = 1;
+    select file as LINE_CATALOG from calibFiles where REFLEX.CATG == "LINE_CATALOG"
+        and inputFile.INSTRUME==INSTRUME;
+
+    minRet = 0;
+    select file as BADPIX_TABLE from calibFiles where PRO.CATG == "BADPIX_TABLE"
+        and inputFile.INSTRUME==INSTRUME;
+
+    product LSF_PROFILE_WKF
+    {
+        REFLEX.CATG = "LSF_PROFILE_WKF";
+        PRO.CATG = "LSF_PROFILE_WKF";
+    }
+
+    recipe muse_lsf;
+}
+
+
+action muse_twilight
+{
+
+    minRet = 1;
+    select file as MASTER_BIAS from calibFiles where REFLEX.CATG == "MASTER_BIAS"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 3 and MJD-OBS < inputFile.MJD-OBS + 3;
+
+    minRet = 1;maxRet = 1;
+    select file as MASTER_FLAT from calibFiles where REFLEX.CATG == "MASTER_FLAT"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+        //and inputFile.INS.OPTI1.FILTER==INS.OPTI1.FILTER
+        //and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME        
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 3 and MJD-OBS < inputFile.MJD-OBS + 3;
+
+    minRet = 1;
+    select file as TRACE_TABLE from calibFiles where REFLEX.CATG == "TRACE_TABLE"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+        //and inputFile.INS.OPTI1.FILTER==INS.OPTI1.FILTER
+        //and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 3 and MJD-OBS < inputFile.MJD-OBS + 3;
+     //   and INS.TEMP7.VAL > inputFile.INS.TEMP7.VAL - 3 and INS.TEMP7.VAL < inputFile.INS.TEMP7.VAL + 3;
+
+
+    minRet = 1;
+    select file as WAVECAL_TABLE from calibFiles where REFLEX.CATG == "WAVECAL_TABLE"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+       // and inputFile.INS.OPTI1.FILTER==INS.OPTI1.FILTER
+       // and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME
+        and inputFile.DET.READ.CURID==DET.READ.CURID
+        and MJD-OBS > inputFile.MJD-OBS - 3 and MJD-OBS < inputFile.MJD-OBS + 3;
+
+    minRet = 0;
+    select file as BADPIX_TABLE from calibFiles where PRO.CATG == "BADPIX_TABLE"
+        and inputFile.INSTRUME==INSTRUME;
+
+    minRet = 0;
+    select file as MASTER_DARK from calibFiles where REFLEX.CATG == "MASTER_DARK"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 5 and MJD-OBS < inputFile.MJD-OBS + 5;
+
+    minRet = 1;maxRet = 1;
+    select file as GEOMETRY_TABLE from calibFiles where REFLEX.CATG == "GEOMETRY_TABLE"
+        and inputFile.INSTRUME==INSTRUME;
+        //and inputFile.INSTRUME==INSTRUME
+        //and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME;
+
+    minRet = 0;
+    select file as VIGNETTING_MASK from calibFiles where REFLEX.CATG == "VIGNETTING_MASK"
+       and inputFile.INSTRUME==INSTRUME
+       and inputFile.MJD-OBS < 57823.;
+
+    minRet = 0; maxRet = 1;
+    select file as ILLUM from calibFiles where REFLEX.CATG == "ILLUM"
+       and inputFile.INSTRUME==INSTRUME
+       and  inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+       and MJD-OBS > inputFile.MJD-OBS - 0.5 and MJD-OBS < inputFile.MJD-OBS + 0.5;
+
+    product DATACUBE_SKYFLAT
+    {
+        REFLEX.CATG = "DATACUBE_SKYFLAT";
+        PRO.CATG = "DATACUBE_SKYFLAT";
+    }
+
+    product TWILIGHT_CUBE
+    {
+        REFLEX.CATG = "TWILIGHT_CUBE";
+        PRO.CATG = "TWILIGHT_CUBE";
+    }
+
+
+    recipe muse_twilight;
+}
+
+
+//
+// Action rules for the post-processing part of the MUSE data reduction cascade.
+//
+
+action muse_standard
+{
+
+    // muse_scibasic configuration
+
+
+    minRet = 1; maxRet = 1;
+    select file as MASTER_BIAS from calibFiles where REFLEX.CATG == "MASTER_BIAS"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 3 and MJD-OBS < inputFile.MJD-OBS + 3;
+
+    minRet = 0;
+    select file as MASTER_DARK from calibFiles where REFLEX.CATG == "MASTER_DARK"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 5 and MJD-OBS < inputFile.MJD-OBS + 5;
+
+    minRet = 1;maxRet = 1;
+    select file as MASTER_FLAT from calibFiles where REFLEX.CATG == "MASTER_FLAT"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+       // and inputFile.INS.OPTI1.FILTER==INS.OPTI1.FILTER
+       // and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 3 and MJD-OBS < inputFile.MJD-OBS + 3;
+
+
+    minRet = 1; maxRet = 1;
+    select file as TRACE_TABLE from calibFiles where REFLEX.CATG == "TRACE_TABLE"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+       // and inputFile.INS.OPTI1.FILTER==INS.OPTI1.FILTER
+       // and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 3 and MJD-OBS < inputFile.MJD-OBS + 3;
+
+    minRet = 1; maxRet = 1;
+    select file as WAVECAL_TABLE from calibFiles where REFLEX.CATG == "WAVECAL_TABLE"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+      //  and inputFile.INS.OPTI1.FILTER==INS.OPTI1.FILTER
+      //  and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME    
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 3 and MJD-OBS < inputFile.MJD-OBS + 3;
+
+
+    minRet = 1; maxRet = 1;
+    select file as GEOMETRY_TABLE from calibFiles where REFLEX.CATG == "GEOMETRY_TABLE"
+        and inputFile.INSTRUME==INSTRUME;
+        //and inputFile.INSTRUME==INSTRUME
+        //and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME;
+
+    minRet = 0; maxRet = 1;
+    select file as ILLUM from calibFiles where REFLEX.CATG == "ILLUM"
+       and inputFile.INSTRUME==INSTRUME
+       and  inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+       and MJD-OBS > inputFile.MJD-OBS - 0.5 and MJD-OBS < inputFile.MJD-OBS + 0.5;
+
+    minRet = 0; maxRet = 1;
+    select file as TWILIGHT_CUBE from calibFiles where REFLEX.CATG == "TWILIGHT_CUBE"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+       // and inputFile.INS.OPTI1.FILTER==INS.OPTI1.FILTER
+       // and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 30 and MJD-OBS < inputFile.MJD-OBS + 30;
+
+    minRet = 0;
+    select file as BADPIX_TABLE from calibFiles where PRO.CATG == "BADPIX_TABLE"
+        and inputFile.INSTRUME==INSTRUME;
+
+    minRet = 0;
+    select file as NONLINEARITY_GAIN from calibFiles where REFLEX.CATG == "NONLINEARITY_GAIN"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.DET.BINX==DET.BINX
+        and inputFile.DET.BINY==DET.BINY
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME;
+
+    // muse_standard configuration
+
+    minRet = 1; maxRet = 1;
+    select file as EXTINCT_TABLE from calibFiles where REFLEX.CATG == "EXTINCT_TABLE"
+        and inputFile.INSTRUME==INSTRUME;
+
+    minRet = 1; maxRet = 1;
+    select file as STD_FLUX_TABLE from calibFiles where REFLEX.CATG == "STD_FLUX_TABLE"
+        and inputFile.INSTRUME==INSTRUME;
+
+    minRet = 0; maxRet = 1;
+    select file as TELLURIC_REGIONS from calibFiles where REFLEX.CATG == "TELLURIC_REGIONS"
+        and inputFile.INSTRUME==INSTRUME;
+
+    minRet = 0; maxRet = 1;
+    select file as FILTER_LIST from calibFiles where REFLEX.CATG == "FILTER_LIST"
+        and inputFile.INSTRUME==INSTRUME;
+
+//  minRet = 1; maxRet = 1;
+//  select file as STD_RESPONSE from calibFiles where REFLEX.CATG == "STD_RESPONSE"
+//      and inputFile.INSTRUME==INSTRUME
+//      and inputFile.INS.MODE==INS.MODE;
+
+//  minRet = 0; maxRet = 1;
+//  select file as STD_TELLURIC from calibFiles where REFLEX.CATG == "STD_TELLURIC"
+//      and inputFile.INSTRUME==INSTRUME
+//      and inputFile.INS.MODE==INS.MODE;
+
+
+
+    product STD_RESPONSE
+    {
+        REFLEX.CATG = "STD_RESPONSE";
+        PRO.CATG = "STD_RESPONSE";
+    }
+
+    product STD_FLUXES
+    {
+        REFLEX.CATG = "STD_FLUXES";
+        PRO.CATG = "STD_FLUXES";
+    }
+
+    product DATACUBE_STD
+    {
+        REFLEX.CATG = "DATACUBE_STD";
+        PRO.CATG = "DATACUBE_STD";
+    }
+
+    product STD_TELLURIC
+    {
+        REFLEX.CATG = "STD_TELLURIC";
+        PRO.CATG = "STD_TELLURIC";
+    }
+
+    recipe muse_standard;
+}
+
+
+action muse_sky
+{
+
+    // muse_scibasic configuration
+
+
+    minRet = 1; maxRet = 1;
+    select file as MASTER_BIAS from calibFiles where REFLEX.CATG == "MASTER_BIAS"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 3 and MJD-OBS < inputFile.MJD-OBS + 3;
+
+    minRet = 0;
+    select file as MASTER_DARK from calibFiles where REFLEX.CATG == "MASTER_DARK"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 5 and MJD-OBS < inputFile.MJD-OBS + 5;
+
+    minRet = 1; maxRet = 1;
+    select file as MASTER_FLAT from calibFiles where REFLEX.CATG == "MASTER_FLAT"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+       // and inputFile.INS.OPTI1.FILTER==INS.OPTI1.FILTER
+       // and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 3 and MJD-OBS < inputFile.MJD-OBS + 3;
+
+    minRet = 1; maxRet = 1;
+    select file as TRACE_TABLE from calibFiles where REFLEX.CATG == "TRACE_TABLE"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+       // and inputFile.INS.OPTI1.FILTER==INS.OPTI1.FILTER
+       // and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 3 and MJD-OBS < inputFile.MJD-OBS + 3;
+
+    minRet = 1; maxRet = 1;
+    select file as WAVECAL_TABLE from calibFiles where REFLEX.CATG == "WAVECAL_TABLE"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+       // and inputFile.INS.OPTI1.FILTER==INS.OPTI1.FILTER
+       // and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 3 and MJD-OBS < inputFile.MJD-OBS + 3;
+
+    minRet = 1; maxRet = 1;
+    select file as GEOMETRY_TABLE from calibFiles where REFLEX.CATG == "GEOMETRY_TABLE"
+        and inputFile.INSTRUME==INSTRUME;
+        //and inputFile.INSTRUME==INSTRUME
+        //and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME;
+
+    minRet = 0; maxRet = 1;
+    select file as ILLUM from calibFiles where REFLEX.CATG == "ILLUM"
+       and inputFile.INSTRUME==INSTRUME
+       and  inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+       and MJD-OBS > inputFile.MJD-OBS - 0.5 and MJD-OBS < inputFile.MJD-OBS + 0.5;
+
+    minRet = 0; maxRet = 1;
+    select file as TWILIGHT_CUBE from calibFiles where REFLEX.CATG == "TWILIGHT_CUBE"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+       // and inputFile.INS.OPTI1.FILTER==INS.OPTI1.FILTER
+       // and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 30 and MJD-OBS < inputFile.MJD-OBS + 30;
+
+    minRet = 0;
+    select file as BADPIX_TABLE from calibFiles where PRO.CATG == "BADPIX_TABLE"
+        and inputFile.INSTRUME==INSTRUME;
+
+    minRet = 0;
+    select file as NONLINEARITY_GAIN from calibFiles where REFLEX.CATG == "NONLINEARITY_GAIN"
+       and inputFile.INSTRUME==INSTRUME
+        and inputFile.DET.BINX==DET.BINX
+        and inputFile.DET.BINY==DET.BINY
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME;
+
+
+    // muse_create_sky configuration
+
+    minRet = 1; maxRet = 1;
+    select file as EXTINCT_TABLE from calibFiles where REFLEX.CATG == "EXTINCT_TABLE"
+        and inputFile.INSTRUME==INSTRUME;
+
+
+    minRet = 1; maxRet = 1;
+    select file as SKY_LINES from calibFiles where REFLEX.CATG == "SKY_LINES"
+        and inputFile.INSTRUME==INSTRUME;
+
+
+    minRet = 1; maxRet = 1;
+    select file as LSF_PROFILE from calibFiles where REFLEX.CATG == "LSF_PROFILE"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME;
+
+    minRet = 0;
+    select file as LSF_PROFILE_WKF from calibFiles where REFLEX.CATG == "LSF_PROFILE_WKF"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME;
+  
+   minRet = 0; maxRet = 1;
+    select file as SKY_MASK from calibFiles where REFLEX.CATG == "SKY_MASK"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.MJD-OBS==MJD-OBS
+        and inputFile.TPL.START==TPL.START;
+
+    minRet = 0; maxRet = 1;
+    select file as SKY_CONTINUUM from calibFiles where REFLEX.CATG == "SKY_CONTINUUM"
+        and inputFile.INSTRUME==INSTRUME;
+
+ //   minRet = 0; maxRet = 1;
+ //   select file as STD_TELLURIC_WKF from calibFiles where REFLEX.CATG == "STD_TELLURIC_WKF"
+ //       and inputFile.INSTRUME==INSTRUME
+ //       and inputFile.INS.MODE==INS.MODE;
+
+ //   minRet = 0; maxRet = 1;
+ //   select file as STD_RESPONSE_WKF from calibFiles where REFLEX.CATG == "STD_RESPONSE_WKF"
+ //       and inputFile.INSTRUME==INSTRUME
+ //       and inputFile.INS.MODE==INS.MODE;
+
+    minRet = 0; maxRet = 1;
+    select file as STD_TELLURIC from calibFiles where REFLEX.CATG == "STD_TELLURIC"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+       and MJD-OBS > inputFile.MJD-OBS - 1 and MJD-OBS < inputFile.MJD-OBS + 1;
+
+    minRet = 1; maxRet = 1;
+    select file as STD_RESPONSE from calibFiles where REFLEX.CATG == "STD_RESPONSE"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE;
+ 
+   minRet = 0; maxRet = 1;
+   select file as STD_TELLURIC_m from calibFiles where REFLEX.CATG == "STD_TELLURIC" and CALTYPE == "MASTER"
+       and inputFile.INSTRUME==INSTRUME
+       and inputFile.INS.MODE==INS.MODE
+       and MJD-OBS > inputFile.MJD-OBS - 1 and MJD-OBS < inputFile.MJD-OBS + 1;
+  
+   minRet = 1; maxRet = 1;
+   select file as STD_RESPONSE_m from calibFiles where REFLEX.CATG == "STD_RESPONSE" and CALTYPE == "MASTER"
+       and inputFile.INSTRUME==INSTRUME
+       and inputFile.INS.MODE==INS.MODE;
+
+    minRet = 0; maxRet = 1;
+    select file as RAMAN_LINES from calibFiles where REFLEX.CATG == "RAMAN_LINES"
+        and (inputFile.INS.MODE=="WFM-AO-N" or inputFile.INS.MODE=="NFM-AO-N" or inputFile.INS.MODE=="WFM-AO-E");
+
+
+//    product SKY_MASK
+//    {
+//        REFLEX.CATG = "SKY_MASK";
+//    }
+//
+//    product SKY_LINES
+//    {
+//        REFLEX.CATG = "SKY_LINES";
+//    }
+//
+//    product SKY_CONTINUUM
+//    {
+//        REFLEX.CATG = "SKY_CONTINUUM";
+//    }
+//
+    product SKY_MASK_WKF
+    {
+        REFLEX.CATG = "SKY_MASK_WKF";
+        PRO.CATG = "SKY_MASK_WKF";
+    }
+
+    product SKY_LINES_WKF
+    {
+        REFLEX.CATG = "SKY_LINES_WKF";
+        PRO.CATG = "SKY_LINES_WKF";
+    }
+
+    product SKY_SPECTRUM
+    {
+        REFLEX.CATG = "SKY_SPECTRUM";
+        PRO.CATG = "SKY_SPECTRUM";
+    }
+
+    product SKY_CONTINUUM_WKF
+    {
+        REFLEX.CATG = "SKY_CONTINUUM_WKF";
+        PRO.CATG = "SKY_CONTINUUM_WKF";
+    }
+
+    recipe muse_create_sky;
+}
+
+
+action muse_astrometry
+{
+
+    minRet = 1; maxRet = 1;
+    select file as MASTER_BIAS from calibFiles where REFLEX.CATG == "MASTER_BIAS"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 3 and MJD-OBS < inputFile.MJD-OBS + 3;
+
+    minRet = 0;
+    select file as MASTER_DARK from calibFiles where REFLEX.CATG == "MASTER_DARK"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 5 and MJD-OBS < inputFile.MJD-OBS + 5;
+
+    minRet = 1; maxRet = 1;
+    select file as MASTER_FLAT from calibFiles where REFLEX.CATG == "MASTER_FLAT"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+       // and inputFile.INS.OPTI1.FILTER==INS.OPTI1.FILTER
+       // and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 3 and MJD-OBS < inputFile.MJD-OBS + 3;
+
+    minRet = 1; maxRet = 1;
+    select file as TRACE_TABLE from calibFiles where REFLEX.CATG == "TRACE_TABLE"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+       // and inputFile.INS.OPTI1.FILTER==INS.OPTI1.FILTER
+       // and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 3 and MJD-OBS < inputFile.MJD-OBS + 3;
+
+    minRet = 1; maxRet = 1;
+    select file as WAVECAL_TABLE from calibFiles where REFLEX.CATG == "WAVECAL_TABLE"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+        //and inputFile.INS.OPTI1.FILTER==INS.OPTI1.FILTER
+        //and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 3 and MJD-OBS < inputFile.MJD-OBS + 3;
+
+    minRet = 1; maxRet = 1;
+    select file as GEOMETRY_TABLE from calibFiles where REFLEX.CATG == "GEOMETRY_TABLE"
+        and inputFile.INSTRUME==INSTRUME;
+        //and inputFile.INSTRUME==INSTRUME
+        //and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME;
+
+    minRet = 0; maxRet = 1;
+    select file as ILLUM from calibFiles where REFLEX.CATG == "ILLUM"
+       and inputFile.INSTRUME==INSTRUME
+       and  inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+       and MJD-OBS > inputFile.MJD-OBS - 0.5 and MJD-OBS < inputFile.MJD-OBS + 0.5;
+
+    minRet = 0; maxRet = 1;
+    select file as TWILIGHT_CUBE from calibFiles where REFLEX.CATG == "TWILIGHT_CUBE"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+       // and inputFile.INS.OPTI1.FILTER==INS.OPTI1.FILTER
+       // and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 30 and MJD-OBS < inputFile.MJD-OBS + 30;
+
+    minRet = 0;
+    select file as BADPIX_TABLE from calibFiles where PRO.CATG == "BADPIX_TABLE"
+        and inputFile.INSTRUME==INSTRUME;
+
+    minRet = 0;
+    select file as NONLINEARITY_GAIN from calibFiles where REFLEX.CATG == "NONLINEARITY_GAIN"
+       and inputFile.INSTRUME==INSTRUME
+        and inputFile.DET.BINX==DET.BINX
+        and inputFile.DET.BINY==DET.BINY
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME;
+
+
+    // muse_astrometry configuration
+
+    minRet = 1; maxRet = 1;
+    select file as ASTROMETRY_REFERENCE from calibFiles where REFLEX.CATG == "ASTROMETRY_REFERENCE"
+        and inputFile.INSTRUME==INSTRUME;
+
+    minRet = 0; maxRet = 1;
+    select file as EXTINCT_TABLE from calibFiles where REFLEX.CATG == "EXTINCT_TABLE"
+        and inputFile.INSTRUME==INSTRUME;
+
+  //  minRet = 0; maxRet = 1;
+  //  select file as STD_RESPONSE_WKF from calibFiles where REFLEX.CATG == "STD_RESPONSE_WKF"
+  //      and inputFile.INSTRUME==INSTRUME
+  //      and inputFile.INS.MODE==INS.MODE;
+
+  //  minRet = 0; maxRet = 1;
+  //  select file as STD_TELLURIC_WKF from calibFiles where REFLEX.CATG == "STD_TELLURIC_WKF"
+  //      and inputFile.INSTRUME==INSTRUME
+  //      and inputFile.INS.MODE==INS.MODE;
+
+    minRet = 1; maxRet = 1;
+    select file as STD_RESPONSE from calibFiles where REFLEX.CATG == "STD_RESPONSE"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE;
+
+    minRet = 0; maxRet = 1;
+    select file as STD_TELLURIC from calibFiles where REFLEX.CATG == "STD_TELLURIC"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE;
+
+   minRet = 0; maxRet = 1;
+   select file as STD_TELLURIC_m from calibFiles where REFLEX.CATG == "STD_TELLURIC" and CALTYPE == "MASTER"
+       and inputFile.INSTRUME==INSTRUME
+       and inputFile.INS.MODE==INS.MODE
+       and MJD-OBS == inputFile.MJD-OBS;
+
+   minRet = 1; maxRet = 1;
+   select file as STD_RESPONSE_m from calibFiles where REFLEX.CATG == "STD_RESPONSE" and CALTYPE == "MASTER"
+       and inputFile.INSTRUME==INSTRUME
+       and inputFile.INS.MODE==INS.MODE;
+
+
+    product ASTROMETRY_WCS
+    {
+        REFLEX.CATG = "ASTROMETRY_WCS_WKF";
+        PRO.CATG = "ASTROMETRY_WCS_WKF";
+    }
+
+    recipe muse_astrometry;
+}
+
+
+action muse_science
+{
+
+    // muse_scibasic configuration
+
+    minRet = 1;maxRet = 1;
+    select file as MASTER_BIAS from calibFiles where REFLEX.CATG == "MASTER_BIAS"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 3 and MJD-OBS < inputFile.MJD-OBS + 3;
+
+    minRet = 0;
+    select file as MASTER_DARK from calibFiles where REFLEX.CATG == "MASTER_DARK"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 5 and MJD-OBS < inputFile.MJD-OBS + 5;
+
+    minRet = 1;maxRet = 1;
+    select file as MASTER_FLAT from calibFiles where REFLEX.CATG == "MASTER_FLAT"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+       // and inputFile.INS.OPTI1.FILTER==INS.OPTI1.FILTER
+       // and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 3 and MJD-OBS < inputFile.MJD-OBS + 3;
+
+
+    minRet = 1;maxRet = 1;
+    select file as TRACE_TABLE from calibFiles where REFLEX.CATG == "TRACE_TABLE"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+       // and inputFile.INS.OPTI1.FILTER==INS.OPTI1.FILTER
+       // and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 3 and MJD-OBS < inputFile.MJD-OBS + 3;
+
+
+    minRet = 1;maxRet = 1;
+    select file as WAVECAL_TABLE from calibFiles where REFLEX.CATG == "WAVECAL_TABLE"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+       // and inputFile.INS.OPTI1.FILTER==INS.OPTI1.FILTER
+       // and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 3 and MJD-OBS < inputFile.MJD-OBS + 3;
+
+
+    minRet = 1;maxRet = 1;
+    select file as GEOMETRY_TABLE from calibFiles where REFLEX.CATG == "GEOMETRY_TABLE"
+        and inputFile.INSTRUME==INSTRUME;
+        //and inputFile.INSTRUME==INSTRUME
+        //and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME;
+
+    minRet = 0; maxRet = 1;
+    select file as ILLUM from calibFiles where REFLEX.CATG == "ILLUM"
+       and inputFile.INSTRUME==INSTRUME
+       and  inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+       and MJD-OBS > inputFile.MJD-OBS - 1 and MJD-OBS < inputFile.MJD-OBS + 1;
+
+    minRet = 0; maxRet = 1;
+    select file as TWILIGHT_CUBE from calibFiles where REFLEX.CATG == "TWILIGHT_CUBE"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+       // and inputFile.INS.OPTI1.FILTER==INS.OPTI1.FILTER
+       // and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME
+        and MJD-OBS > inputFile.MJD-OBS - 30 and MJD-OBS < inputFile.MJD-OBS + 30;
+
+   minRet = 0;
+    select file as BADPIX_TABLE from calibFiles where PRO.CATG == "BADPIX_TABLE"
+        and inputFile.INSTRUME==INSTRUME;
+   minRet = 0;
+
+    select file as BADPIX_TABLE_SCIENCE from calibFiles where PRO.CATG == "SCIENCE_BP_TABLE"
+        and inputFile.INSTRUME==INSTRUME;
+
+
+   minRet = 0;
+    select file as NONLINEARITY_GAIN from calibFiles where REFLEX.CATG == "NONLINEARITY_GAIN"
+       and inputFile.INSTRUME==INSTRUME
+        and inputFile.DET.BINX==DET.BINX
+        and inputFile.DET.BINY==DET.BINY
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME;
+
+
+    // muse_scipost configuration
+
+    minRet = 1; maxRet = 1;
+    select file as EXTINCT_TABLE from calibFiles where REFLEX.CATG == "EXTINCT_TABLE"
+        and inputFile.INSTRUME==INSTRUME;
+
+   minRet = 0;  maxRet = 1;
+    select file as SKY_LINES from calibFiles where  (REFLEX.CATG == "SKY_LINES_WKF"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+        and inputFile.TPL.START==TPL.START)  or
+        (PRO.CATG == "SKY_LINES"
+            and inputFile.INSTRUME==INSTRUME);
+// minRet = 0;  maxRet = 1;
+//  select file as SKY_LINES from calibFiles where  REFLEX.CATG == "SKY_LINES_WKF"
+//      and inputFile.INSTRUME==INSTRUME
+//      and inputFile.INS.MODE==INS.MODE
+//      and inputFile.TPL.START==TPL.START;
+
+
+    minRet = 0; maxRet = 1;
+    select file as SKY_CONTINUUM from calibFiles where (REFLEX.CATG == "SKY_CONTINUUM_WKF"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+        and inputFile.TPL.START==TPL.START) or
+        (REFLEX.CATG == "SKY_CONTINUUM"
+            and inputFile.INSTRUME==INSTRUME);
+// minRet = 0; maxRet = 1;
+// select file as SKY_CONTINUUM from calibFiles where REFLEX.CATG == "SKY_CONTINUUM_WKF"
+//     and inputFile.INSTRUME==INSTRUME
+//     and inputFile.INS.MODE==INS.MODE
+//     and inputFile.TPL.START==TPL.START;
+
+
+
+    minRet = 0; maxRet = 1;
+    select file as SKY_MASK from calibFiles where REFLEX.CATG == "SKY_MASK"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.MJD-OBS==MJD-OBS
+        and inputFile.TPL.START==TPL.START;
+
+    minRet = 1; maxRet = 1;
+    select file as LSF_PROFILE from calibFiles where REFLEX.CATG == "LSF_PROFILE"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME;
+
+    minRet = 0;
+    select file as LSF_PROFILE_WKF from calibFiles where REFLEX.CATG == "LSF_PROFILE_WKF"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+        and inputFile.DET.READ.CURNAME==DET.READ.CURNAME;
+
+
+  // minRet = 0; maxRet = 1;
+  // select file as STD_TELLURIC_WKF from calibFiles where REFLEX.CATG == "STD_TELLURIC_WKF"
+  //     and inputFile.INSTRUME==INSTRUME
+  //     and inputFile.INS.MODE==INS.MODE;
+
+  // minRet = 0; maxRet = 1;
+  // select file as STD_RESPONSE_WKF from calibFiles where REFLEX.CATG == "STD_RESPONSE_WKF"
+  //     and inputFile.INSTRUME==INSTRUME
+  //     and inputFile.INS.MODE==INS.MODE;
+
+   minRet = 0; maxRet = 1;
+   select file as STD_TELLURIC from calibFiles where REFLEX.CATG == "STD_TELLURIC"
+       and inputFile.INSTRUME==INSTRUME
+       and inputFile.INS.MODE==INS.MODE
+       and MJD-OBS > inputFile.MJD-OBS -  1 and MJD-OBS < inputFile.MJD-OBS + 1;
+
+   minRet = 0; maxRet = 1;
+   select file as STD_RESPONSE from calibFiles where REFLEX.CATG == "STD_RESPONSE"
+       and inputFile.INSTRUME==INSTRUME
+       and inputFile.INS.MODE==INS.MODE;
+
+   minRet = 0; maxRet = 1;
+   select file as STD_TELLURIC_m from calibFiles where REFLEX.CATG == "STD_TELLURIC" and CALTYPE == "MASTER"
+       and inputFile.INSTRUME==INSTRUME
+       and inputFile.INS.MODE==INS.MODE
+       and MJD-OBS > inputFile.MJD-OBS - 1 and MJD-OBS < inputFile.MJD-OBS + 1;
+
+   minRet = 1; maxRet = 1;
+   select file as STD_RESPONSE_m from calibFiles where REFLEX.CATG == "STD_RESPONSE" and CALTYPE == "MASTER"
+       and inputFile.INSTRUME==INSTRUME
+       and inputFile.INS.MODE==INS.MODE;
+
+
+    minRet = 0; maxRet = 1;
+    select file as ASTROMETRY_WCS from calibFiles where REFLEX.CATG == "ASTROMETRY_WCS"
+       and inputFile.INSTRUME==INSTRUME
+       and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME;
+
+   // minRet = 0; maxRet = 1;
+   // select file as ASTROMETRY_WCS_WKF from calibFiles where
+   //     PRO.CATG == "ASTROMETRY_WCS_WKF"
+   //     and inputFile.INSTRUME==INSTRUME
+   //     and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME;
+
+
+    minRet = 0; maxRet = 1;
+    select file as OUTPUT_WCS from calibFiles where REFLEX.CATG == "OUTPUT_WCS"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME;
+
+  //  minRet = 1; maxRet = 1;
+  //  select file as STD_FLUX_TABLE from calibFiles where REFLEX.CATG == "STD_FLUX_TABLE"
+  //      and inputFile.INSTRUME==INSTRUME;
+
+    minRet = 0; maxRet = 1;
+    select file as FILTER_LIST from calibFiles where REFLEX.CATG == "FILTER_LIST"
+        and inputFile.INSTRUME==INSTRUME;
+
+    minRet = 0; maxRet = 1;
+    select file as RAMAN_LINES from calibFiles where REFLEX.CATG == "RAMAN_LINES"
+        and (inputFile.INS.MODE=="WFM-AO-N" or inputFile.INS.MODE=="NFM-AO-N" or inputFile.INS.MODE=="WFM-AO-E");
+
+    product DATACUBE_FINAL
+    {
+        REFLEX.CATG = "DATACUBE_FINAL";
+        PRO.CATG =  "DATACUBE_FINAL";
+    }
+
+  //  product IMAGE_FOV
+  //  {
+  //      REFLEX.CATG = "IMAGE_FOV";
+  //      PRO.CATG =  "IMAGE_FOV";
+  //  }
+
+    product PIXTABLE_REDUCED
+    {
+       REFLEX.CATG = "PIXTABLE_REDUCED";
+       PRO.CATG =  "PIXTABLE_REDUCED";
+    }
+
+    product PIXTABLE_COMBINED
+    {
+       REFLEX.CATG = "PIXTABLE_COMBINED";
+       PRO.CATG =  "PIXTABLE_COMBINED";
+    }
+
+    recipe muse_scipost;
+}
+
+ 
+
+ action muse_exp_combine
+ {
+    minRet = 2;  maxRet = 2000;
+    select file as PIXTABLE_REDUCED from calibFiles where REFLEX.CATG == "PIXTABLE_REDUCED"
+        and inputFile.INS.MODE==INS.MODE
+        and inputFile.OBS.TARG.NAME==OBS.TARG.NAME;
+
+//    minRet = 2;  maxRet = 2000;
+//    select file as IMAGE_FOV from calibFiles where REFLEX.CATG == "IMAGE_FOV"
+//        and inputFile.INS.MODE==INS.MODE
+//        and inputFile.OBS.TARG.NAME==OBS.TARG.NAME;
+
+    minRet = 0; maxRet = 1;
+    select file as FILTER_LIST from calibFiles where REFLEX.CATG == "FILTER_LIST"
+        and inputFile.INSTRUME==INSTRUME;
+
+    minRet = 0; maxRet = 1;
+    select file as OUTPUT_WCS from calibFiles where REFLEX.CATG == "OUTPUT_WCS"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+        and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME;
+
+  //  minRet = 1;  maxRet = 1;
+  //  select file as OFFSET_LIST from calibFiles where REFLEX.CATG == "OFFSET_LIST"
+  //      and inputFile.INS.MODE==INS.MODE
+  //      and inputFile.OBS.TARG.NAME==OBS.TARG.NAME;
+
+}
+
+ action combine_pixtable
+ {
+//    minRet = 2;  maxRet = 2000;
+//    select file as PIXTABLE_REDUCED from calibFiles where REFLEX.CATG == "PIXTABLE_REDUCED"
+//        and inputFile.INS.MODE==INS.MODE
+//        and inputFile.OBS.TARG.NAME==OBS.TARG.NAME;
+
+    minRet = 2;  maxRet = 2000;
+    select file as IMAGE_FOV from calibFiles where REFLEX.CATG == "IMAGE_FOV"
+        and inputFile.INS.MODE==INS.MODE
+        and inputFile.OBS.TARG.NAME==OBS.TARG.NAME;
+
+    minRet = 0; maxRet = 1;
+    select file as FILTER_LIST from calibFiles where REFLEX.CATG == "FILTER_LIST"
+        and inputFile.INSTRUME==INSTRUME;
+
+    minRet = 0; maxRet = 1;
+    select file as OUTPUT_WCS from calibFiles where REFLEX.CATG == "OUTPUT_WCS"
+        and inputFile.INSTRUME==INSTRUME
+        and inputFile.INS.MODE==INS.MODE
+        and inputFile.INS.OPTI2.NAME==INS.OPTI2.NAME;
+
+  //  minRet = 1;  maxRet = 1;
+  //  select file as OFFSET_LIST from calibFiles where REFLEX.CATG == "OFFSET_LIST"
+  //      and inputFile.INS.MODE==INS.MODE
+  //      and inputFile.OBS.TARG.NAME==OBS.TARG.NAME;
+
+}
+
+
+// vim: et:ts=4:sw=4

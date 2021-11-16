@@ -1,0 +1,622 @@
+v2.8.5 (20-05-2021):
+- Added unit test for calculating the Strehl estimate using SPARTA RTC
+  measurements.
+
+v2.8.4 (29-01-2021):
+- Fixed issue with overplotting symbols for the detected sources in the
+  interactive actor of the Reflex workflow.
+- Use and improved method, based on the Strehl measurements of the AO system,
+  to compute the effective spatial resolution for NFM mode observations, if
+  the "sdpCube" format is used to save the final data cube.
+- Improvements to the technical recipe muse_lingain:
+  . The input frame tags of the recipe were changed from DETMON_LAMP_ON and
+    DETMON_LAMP_OFF to LINGAIN_LAMP_ON and LINGAIN_LAMP_OFF, respectively.
+  . The list of QC parameters related to the gain computation have been revised
+    and extended.
+- Fixed issues in the contributed ZAP workflow:
+  . Fixed python2/python3 compatibility issue in muse_zap.py
+  . Reset the ROOT_DATA_PATH to the proper default. 
+
+v2.8.3 (2020-05-20):
+- Changed the order of the Raman contamination correction and the
+  auto-calibration. This addresses residuals visible in the relevant
+  wavelength range due to the non-uniformity of the Raman signal across the
+  field.
+- Added SPECSYS keyword to data cube headers indicating the spectral reference
+  frame of the cube.
+- ESO IDP format updates:
+  . BUNIT keyword was removed from the data cube primary header.
+  . Unit string syntax updated to comply with the ESO Data Interface Control
+    Document v6, sec. 8.
+  . EXPTIME equals TEXPTIME for single exposures.
+
+v2.8.2 (2020-03-15):
+- Reflex workflow updates:
+  . Updated the contributed ZAP workflow to ZAP 2.1.dev and setup to work 
+    with python2 or python3.
+  . Gracefully handle missing, required recipe output in the interactive
+    actor. Updated list of required file types in the error message and
+    beautified the message display.
+  . Updated workflow parameter defaults to create the "sdpCube" output
+    format when the data cubes are created by muse_scipost and
+    muse_exp_combine.
+  . Show URL to reflex tutorials on the workflow canvas.
+  . Added a check for Python modules required by the workflow to
+    the workflow initialization.
+
+v2.8.1 (2019-10-22):
+- Fixed computation of the extraction radius of the circular aperture flux
+  extraction method for intermediately bad seeing conditions.
+
+v2.8 (2019-09-16):
+- Multi-step flux extraction for standard stars:
+  . for Moffat fits, the first step fits parameters in all planes
+  . the 2nd step fits low-order polynomials to all parameters (except flux)
+  . the 3rd step runs constrained Moffat fits to extract the flux
+  . this is now the default flux extraction mechanism for WFM
+- For NFM, the default flux extraction uses the circular aperture.
+- Updated Raman line list, based on better physical understanding.
+- Improvements to the astrometric calibration
+  . kd-tree matching detected sources to astrometric catalog
+  . works with WFM and NFM astrometric fields
+  . the detections are now saved as binary table extension to the
+    ASTROMETRY_WCS output file
+  . the computed solution is saved as secondary FITS WCS to the
+    DATACUBE_ASTROMETRY product
+- Optimize default parameters of overscan modeling, for cleaner bias subtraction
+- Add possibility to compute a smoothed model of the MASTER_DARK
+- Save multi-extension images with the INHERIT keyword, so that viewers
+  display the OBJECT header.
+- Add preview image of the combined field-of-view as a product to the
+  exposure alignment.
+- Update documentation.
+
+v2.6.2 (2019-05-20):
+- Improved determination of the size of the circular aperture for the flux
+  calibration in NFM.
+- Improvements in muse_exp_align:
+  . clean list of detected sources before the field offsets are calculated.
+    Sources too close to a bad pixel are ignored when computing the field
+    offsets.
+  . The SOURCE_LIST frame type is allowed as ancillary input. The source
+    detection can be skipped using the source positions from the input catalog
+    to compute the field offsets.
+- Added QC parameter to muse_geometry to track invalid entries in the
+  geometry_table.
+- Added support for the RAMAN_LINES static calibration to the MUSE Reflex
+  workflow to allow cleaning of the Raman line contamination.
+
+v2.6.1 (2019-03-15):
+- Add the possibility to create a simple exposure map, for the combined
+  field-of-view covered by the input images, to muse_exp_align. The creation
+  of the exposure map is controlled by an expert level parameter, and is off
+  by default.
+
+v2.6 (2018-12-20):
+- correct wiggles visible in high S/N data in AO modes
+- make muse_scipost autocalibration more robust
+- allow muse_astrometry to more likely find a solution
+- do not crash in Raman module when fed data of partial wavelength coverage
+- updates for NFM (these were already available in the SV pre-release version MUSE v2.5.2):
+  . adapt wavelength ranges used for cropping and NaD masking
+  . fix data vignetting at top of frame
+  . somewhat improve standard star flux extraction for bad external seeing
+
+v2.5.2 (2018-08-10): pre-release version for the NFM SV
+- Improvements for processing of NFM mode data.
+
+v2.4.2 (2018-07-20):
+- Reflex interactive actor bug fixes:
+  . fixed offset of detected sources positions drawn onto the field-of-view
+    image.
+  . fixed issue in the muse.xml workflow. The field-of-view backround image
+    is now updated properly when the exposure selection is changed.
+
+v2.4.1 (2018-04-20):
+- Improved Reflex workflow: added interactive actor for the exposure
+  alignment step.
+
+v2.4 (2018-03-05):
+- Implement slice autocalibration, ported from MPDAF.
+- Add possibility to correct for Raman scattered light in AO mode observations.
+- Do not save ARC_RED images by default in muse_wavecal.
+- List the saturated pixels in QC parameter of the WAVECAL_TABLE.
+- Do not compute throughput at 6000 Angstrom in muse_standard.
+- Add list of detected sources as a product to muse_exp_align.
+- Fixed detection threshold parameter of muse_exp_align, and document it
+  correctly.
+- Various (minor) corrections to the documentation.
+
+v2.2 (2017-10-01):
+- Various improvements for processing of AO mode data:
+  . add default crop wavelength ranges for new mode
+  . masking of NaD region depending on instrument mode
+  . fix response calculation in NaD region
+- Improve arc line selection in common wavelength range of all instrument modes.
+- Fix QC FWHM calculation of sources in final data cube.
+
+v2.1.1 (2017-08-09): pre-release version of v2.2 for SV
+- Improvements for processing of AO mode data.
+- The pixel down-scaling factor of the 'drizzle' resampling method (recipe
+  parameter 'pixfrac') now accepts a list of 3 values, one for each dimension.
+- The standard response static calibrations have been updated with
+  (preliminary) versions used for the previous MUSE+AO commissioning runs.
+- Units of offset related QC parameters created by muse_exp_align were changed
+  from degrees to arcsec.
+
+v2.0.3 (2017-07-05):
+- Fix backwards compatibility issue when using an old-style standard
+  response as input in muse_create_sky.
+- Update documentation of muse_create_sky to show the LSF_PROFILE as a
+  required input.
+
+v2.0.2 (2017-05-12):
+- Fix typo in the OCA configuration used by Paranal Science Operations.
+- updated static calibrations (astrometric solution, geometry table, and
+  the LSF profiles)
+
+v2.0.1 (2017-04-26):
+- improved edge finding method when tracing slices on the flat field (fixes
+  tracing issues of slice 17 in IFU 21).
+
+v2.0 (2017-03-01):
+- revised handling of the flat-field spectrum:
+  . divide all (on-sky) data by the average flat-field spectrum at the
+    start of post-processing (muse_scipost, muse_standard, etc.)
+  . compute the throughput of instrument + telescope + sky in muse_standard
+  . add throughput-related QC parameters to muse_standard
+- speed up cube creation by parallelizing the grid contruction
+- improve headers and documentation of the STD_FLUXES data product
+- update default FILTER_LIST with photometric zeropoints (Vega and AB)
+- propagate the photometric zeropoints from the filter list to the
+  IMAGE_FOV products
+- add more infos about recipe parameters and variables to debug-level output
+- hide some rarely used recipe parameters in the recipe help output and show
+  them only in expert mode.
+- improved Reflex workflows:
+  . strategy for telluric correction can be chosen
+  . creation of sky residuals suitable for use with ZAP
+  . enhanced ZAP workflow with improved association of sky residuals
+
+v1.6.4 (2017-01-25):
+- fix smoothing problem of STD_RESPONSE curve
+- work around tracing in IFU 24 problems for 2017 (and all following years)
+- improve documentation and messages regarding OFFSET_LIST
+- make wavelength calibration more robust for extreme cases
+- updated static calibrations (astrometric catalog, astrometric solution,
+  geometry table, and the LSF profiles), suitable for data taken since
+  Nov. 2016.
+- minor improvements to the muse_product_split tool
+- load SKY_MASK also for simple sky subtraction
+
+v1.6.3 (2016-11-16):
+- fix race conditions which occasionally cause segmentation faults in
+  muse_geometry.
+
+v1.6.2 (2016-06-30):
+- new contributed workflow added: this add-on workflow allows to use the ZAP
+  (Zurich Atmosphere Purge) sky-subtraction tool from the Reflex GUI. The
+  workflow is provided and maintained by the ESO SDP group.
+
+v1.6.1 (2016-06-01):
+- ESO IDP support: Fix ABMAGLIM computation on mosaiced fields and update
+  to revised SDP standard.
+
+v1.6 (2016-03-23):
+- improve robustness of wavelength alignment using sky lines
+- correct computation of log-lambda axes
+
+v1.4 (2016-02-19):
+- allow creation of cubes in vacuum wavelengths (using CTYPE3='WAVE' in an
+  OUTPUT_WCS)
+- new (experimental) recipe muse_lingain to compute the gain and the residual
+  non-linearity for each detector of each IFU.
+- give correct sky continuum output from the muse_scipost recipe
+- limit number of iterations when fitting the sky spectrum
+- correct handling of OUTPUT_WCS in the muse_scipost recipe
+- full integration of ESO IDP keywords, when using --format=sdbCube
+- add and correct QC parameters for muse_geometry and muse_lsf
+- improve header keywords for static calibrations and add calibrations suitable
+  for data taken since Oct. 2015
+- correct listing of inputs in the ESO.PRO.RECi keywords, for several recipes
+- improve stability of the muse_geometry recipe
+
+v1.2.2 (2016-02-01):
+- ESO internal release, adding support for creating ESO SDP compliant data
+  cubes.
+
+v1.2.1 (2015-10-06):
+- changed default parameter values of muse_exp_align to values recommended
+  by the ESO SDP group.
+
+v1.2 (2015-10-01): P96 release
+- two LSF descriptions (old parameter table, new cube format):
+  . muse_lsf by default computes the new cube format
+  . model-base sky subtraction can use both formats
+- new recipe muse_exp_align to compute exposure alignment (wobble correction)
+  . create OFFSET_LIST from individual IMAGE_FOVs
+  . input OFFSET_LIST into muse_exp_combine to correct offsets
+- allow use of ILLUMs in muse_twilight
+- reject lowest (5%) of regions in white-light image for sky spectrum
+- improve FWHM-based exposure weighting (use auto-guider measurements if
+  possible)
+- new "simple" sky subtraction (no LSF, no model)
+- allow CR rejection in both cube and spectrum when creating the sky spectrum
+- ignore INFs and NANs when creating sky spectrum (MPDAF #374)
+- add possibility to offset single exposures (in muse_scipost; MPDAF #324; uses
+  OFFSET_LIST)
+- allow flux-scaling of exposures, both single and multiple, in muse_scipost
+  and muse_exp_combine (MPDAF #347; uses OFFSET_LIST)
+- create functions to smooth geometrical solution
+  . active if --smooth of the muse_geometry recipe is positive
+  . also supplied in tool muse_geo_smooth, for quicker post-processing
+- add useful recipe info at start of processing
+- fix muse_cube_combine tool to work again
+- tools muse_product_split and muse_products_merge
+- adapt tools muse_trace_plot_samples, muse_trace_plot_widths,
+  muse_wave_plot_column, and muse_wave_plot_residuals to be able to select
+  extension names, so that they can be used on merged data
+- reflex workflows updated
+  . python based computation of field offsets replaced by recipe muse_exp_align.
+  . dependencies on non-standard python packages have been dropped.
+
+v1.0.5 (2015-07-31): ESO-only release
+- Updated Reflex workflow to Reflex 2.8.
+
+v1.0.4 (2015-04-28): ESO-only release
+- Fix compile-time warning in muse_flux_get_response_table_piecewise_poly().
+
+v1.0.3 (2015-04-07):
+- Improved robustness of the flux response calculation when used
+  with a restricted wavelength range
+- Fixed memory leak when loading incomplete pixel table.
+- Fixed typing error in save parameters of muse_scipost.
+- Minor improvements to the documentation of muse_wavecal:
+  . Typing error fixed in the description of ARC_RESAMPLED.
+  . Add that ARC_RED products are only created when '--lampwise' is used.
+  
+v1.0.2 (2015-03-11):
+- updated version of the Reflex workflows:
+  . Exposure alignment incorporated into the main muse workflow muse.xml.
+  . The scope of the secondary workflow muse_exp_combine.xml has changed.
+    Its purpose is now limited to the combination task of already reduced
+    exposures. No raw or master calibrations are required. 
+  
+v1.0.1 (2015-01-26):
+- updated version of the Reflex workflows fixing a few minor bugs:
+  . LFS_PROFILES and VIGNETTING_MASK were not passed to the relevant actors
+    by the FITS ROUTER
+  . empty SoF now carries on the information on DataSet name
+  . muse_exp_combine.xml workflow loads even if the required additional python
+    modules are not installed in the system
+  . if the alignment fails, it still combines the exposures using offsets 0
+  . new info-layout for muse.xml and muse_exp_combine.xml
+  
+v1.0 (2014-12-05): P94 release
+- change from LSF_TABLE to LSF_PROFILE:
+  . new recipe muse_lsf to compute LSF_PROFILEs
+  . options about LSF computation removed from the muse_wavecal recipe
+  . obsolete recipe muse_sky_lsf removed
+- handling of "attached"/"illum" flat-fields in muse_scibasic (tag ILLUM)
+- new recipe muse_twilight for a 3D handling of the skyflat exposures,
+  to replace the deleted muse_skyflat recipe
+- consolidate save-parameters in muse_scipost (and muse_exp_combine) into a
+  single one; add possibility to save sky-model products (on by default)
+- corrected CR type "median" for all recipes that create output cubes
+- muse_standard can now select the closest star as alternative to the brightest
+  (parameter --select)
+- allow multiple raw data types in muse_scibasic (i.e. OBJECT and STD at the
+  same time, MPDAF #155)
+- muse_standard now produces a new product, STD_FLUXES, and better smooths
+  the output STD_RESPONSE curve (parameter --smooth)
+- make pixel table image format the default (set MUSE_PIXTABLE_SAVE_AS_TABLE=1
+  to get a normal binary FITS table again)
+- save offset headers when using RA/DEC offsets for exposure sequences
+- correct data to barycentric velocities in muse_scipost, on by default
+- improve polynomial fit to overscans (MPDAF #276)
+- propagate RON as computed by muse_bias (MPDAF #239)
+- updated calibrations usable for Comm2b data
+- fix inconsistent extensions of IMAGE_FOV outputs and in-cube images
+- new tool muse_pixtable_erase_slice (MPDAF #238, was already in ESO's v0.18.2)
+- fix bias handling and possible crashed in muse_geometry
+- recipe option --merge added to basic processing recipes to allow writing a
+  single pipeline product file containing all IFUs
+- removed the muse_quick_image recipe and the muse_makeima tool
+- new tools muse_cube_combine and muse_cube_filter
+- removed tool muse_lsf_fwhm
+
+v0.99.0: P94 Pre-release
+- recipe option '--merge' added to the calibration recipes to allow
+  writing a single pipeline product file containing all IFUs.
+- static calibration files updated to the latest version
+
+v0.18.2, v0.18.3, v0.18.4, v0.18.5: ESO internal and public releases
+- only minor changes to core pipeline code
+- changes to other components (Reflex, calibrations etc.)
+
+v0.18.1 (2014-06-25): 2nd SV release
+- properly handle overscan level differences with new bias scheme
+  (reduce warnings, see MPDAF ticket #230)
+
+v0.18.0 (2014-06-18): Pre-SV release
+- use polynomial overscan fits to correct bias problems
+- correct wavelength shifts using sky lines (in muse_scibasic)
+- add --lambdamin/--lambdamax parameters to all recipes that read pixel tables
+- move documentation about offset variables to user manual
+- include documentation about the tools in the manual
+- remove unused and obsolete recipes muse_focus and muse_gainron
+- stop processing GAINRON_STAT files
+
+v0.16.0 (2014-05-16): Post-Comm2a release
+- changed handling of reference tables (ASTROMETRY_REFERENCE, STD_FLUX_TABLE)
+  to be all in one file and search best match using RA,DEC
+- improved User Manual
+- new SKY_LINES list
+- changed handling of position angle and parallactic angle
+- fixed MPDAF tickets #192, #195, #199, #189
+- renamed all useful tools to muse_* (MPDAF ticket #179)
+- let the pipeline load merged calibrations
+- new parameters to the muse_astrometry recipe
+- improved CR rejection for data taken at POSANG=90 or 270
+- somewhat improved error reporting and messages in general
+
+v0.14.1 (2014-03-28):
+- Fix the way packaging is done, so that e.g. calibrations actually install.
+- Update user manual (tickets #180, #191).
+- Fix muse_test_processing to pass (ticket #182).
+- Fix problems regarding OUTPUT_WCS usage (ticket #187).
+- Remove unconditional warning about missing sky lines input.
+- Remove error about not finding objects to measure FWHM for QC, output one
+  warning instead.
+- Ship with python-cpl-0.6.2.
+
+v0.14.0 (2014-03-14), post-Comm1 release:
+- The code was adapted to handle on-sky data correctly, reducting INM data is
+  not supported any more.
+- Adapted default parameters to what's usable for the real data, hence the
+  basic processing should work optimally without any parameters (except --nifu).
+- The User Manual was enhanced a lot.
+- Calibration files are not shipped in the mockdata directory any more, use
+  the ones from the muse-calib tarball.
+- A bug regarding the resampling of southern objects has been fixed.
+- Some bugs in the astrometric calibration were fixed.
+- Pixel tables in RA and DEC now only contain relative spatial coordinates,
+  to get the real position add CRVAL1/2.
+- Improve muse_geometry toward usability for all calibration sequences taken so
+  far.
+- Fix computation of slopes in muse_bias (QC parameters).
+- Do not hang machines any more when running muse_wavecal with --lsf.
+- Please ignore all warning outputs about EQUINOX!
+
+v0.12.0 (2013-10-24), post-PAE release:
+- Make running of the basic processing with --nifu=-1 (internal
+  parallelization much more stable).
+- Fix the computation of the initial variance of MASTER_BIAS files.
+- Running basic processing with --combine=sigclip should now be much
+  faster (thanks to Ralf Palsa for the ground work!).
+- A problem in the FITS headers of LSF_TABLEs was solved.
+- Some updates to the XML to help with data management.
+- Improve error calculation for the STD_TELLURIC table.
+- Further tweak pipeline outputs to provide more readable logging.
+- Enhance unit testing of several modules.
+- Several changes to build system (thanks again to Ralf for the work),
+  backend, and in-code documentation.
+- DRL Design and User Manual were updated from current pipeline, some
+  additional changes were done to accomodate RIXes we received from ESO
+  during the PAE process.
+
+v0.10.0 (2013-08-13), the PAE release:
+- All local patches landed to make muse_geometry work (if you know the
+  right environment variables to set, see README).
+- Simple handling of incoming bad pixels in the tracing process.
+- esorex --man-page muse_recipe_name will now output all in/output data
+  the recipe handles, together with nice descriptions.
+- Remove some ancient fall backs (e.g. do not use DET.CHIP.INDEX any
+  more to find the IFU number).
+- A problem with FITS headers of the SKY_LINES and SKY_CONTINUUM
+  products was fixed.
+- Several minor changes to build system, backend, in-code documentation,
+  and output messages.
+- DRL Design was updated to reflect implementation, especially regarding
+  sky subtraction and geometrical calibration
+- The User Manual now includes a section for the muse_geometry recipe.
+
+Changes since v0.08.00 (2013-07-09), the PAE pre-release:
+- sky subtraction:
+  . the MASTER_SKY file is gone, instead SKY_LINES and SKY_CONTINUUM can
+    be input and are produced separately
+  . sky subtraction now uses STD_RESPONSE (and STD_TELLURIC if given)
+    for flux calibration instead of its own calibration
+  . muse_scipost now needs a SKY_LINES file as input, unless
+    --skymethod is changed to "none".
+  . muse_scipost can now create the sky model, too; so muse_create_sky
+    only needs to be called for a sky exposure that is separate from the
+    science target field
+- muse_geometry was implemented and works with AIT data, with varying
+  success; some special settings are needed to adjust to the data, see
+  README
+- a new recipe, muse_ampl, was added to process special exposures taken
+  with pico amplifier measurements in the focal plane, to estimate the
+  absolute throughput of MUSE
+- do not crash when exposures with all shutters closed are input to
+  muse_wavecal (MPDAF ticket #104)
+- some improvements to pixel grid creation (during final resampling),
+  but this is still very slow for > 3 exposures
+- automated testing was improved and now covers ~73% of the code (~80%
+  of all backend library functions); some old bugs were found and fixed
+
+v0.06.00 (2013-03-27):
+- basic processing can now be internally parallelized using --nifu=-1
+- all basic processing recipes have new options to deal with overscans,
+  replacing the older environment variables
+- improved sky modeling
+- new sky line lists to better match INM data are included
+- more robust LSF fitting
+- a FITS file with WCS headers (tag OUTPUT_WCS) can be used to force the
+  output cube into a particular format (with restrictions, see DRL
+  Design)
+- CPL v6.3 is now needed to compile the pipeline
+- rename output FITS headers from "ESO PRO MUSE" to "ESO DRS MUSE"; this
+  basically breaks backward compatibility for all intermediate and final
+  products
+- change GEOMETRY_TABLE columns from float to double (breaks backward
+  compatibility)
+- updated python-cpl to v0.5
+- fix background display in trace_plot_samples tool
+- support color cuts in the wave_plot_residuals tool
+- new flux integration method using circular aperture in muse_standard
+  recipe
+- the internal telluric regions in muse_standard can now be overridden
+  using an extra input file
+- smoothing and error estimates in muse_standard were improved
+- robustify pipeline against broken input data (but there are so many
+  ways to produce broken data, e.g. with Python and/or MPDAF, that we
+  can never guard against all defects)
+- new combination parameters for muse_scibasic (only really for lab
+  data)
+- remove QC.FLAT.MASTER.THRUPUT from muse_flat recipe, this needs an
+  extra template and recipe to work
+- added QC parameters to muse_astrometry
+
+v0.05.03 (2013-02-18):
+- Fix tests to work with CPL 6.0 and 6.2. (CPL 6.1 was not tested but
+  should work, anything newer than 6.2 will not be supported for
+  v0.05.xx.)
+
+v0.05.02 (2013-02-14):
+- Fix the muse_astromtry recipe to work with CPL 6.2.
+- The image_fwhm tool can now read inputs from FITS extensions and
+  allows to set the sigma level for "object" detection.
+- In the muse_wavecal recipe, do not save ARC_RED_LAMP for single-lamp
+  input.
+- Fix output of muse_combine_pixtables.
+- The manual now contains the beginnings of a section on how to reduce
+  using the Python interface.
+
+v0.05.01 (2012-10-11):
+- The pipeline can now handle data with missing INS LAMP headers (which
+  I still believe to be actually a bug in the VLT software).
+- Fix the bug when not using --lampwise in the muse_wavecal recipe.
+- An update of the included python interface to the pipeline recipes.
+- Several updates to the description files (raw.xml and the new
+  calib.xml).
+
+v0.05.00 (2012-09-14)
+- The possible values of the format parameter (of e.g. muse_scipost)
+  were changed (to be shorter and not contain spaces).
+- Output cubes (and collapsed images) are now named without IFU number,
+  i.e. now are DATACUBE_FINAL.fits and IMAGE_FOV_00XX.fits.
+- Errors happening during the execution of the recipe are now
+  always printed at the end.
+- The line spread function can and should now be calculated from arc
+  exposures (muse_wavecal).
+- Sky subtraction should now work better with INM data, especially using
+  the new mockdata/*inm.fits files (sky line list and throughput curve).
+- Reduction of standard star data and astrometric fields is now fully
+  automated and was tested with the latest INM data.
+- Wavelength calibration has new parameters and can handle exposures of
+  different lamps in a more reliable way.
+
+v0.04.02 (2012-05-29):
+- A fix in the script headers_to_new_ngc.py to allow it to work reliably
+  with PyFITS v3.0.x.
+- Limited support for 1x4 binned exposures (for AIT).
+- Header keyword updates to muse_qi_mask recipe (also for AIT).
+- Code, text, and images to produce the manual are now included, the
+  content of the manual has not changed.
+
+v0.04.01 (2012-03-22):
+- CPL 6.0 is required. (The main reason for this release is to produce a
+  MUSE pipeline that works with an official CPL release.)
+- Status headers were added to the pixel table, following on an action
+  item given to me in January at the Science Software kickoff.
+- Empricial DAR correction does not needlessly add global shifts any
+  more.
+- The technical muse_qi_mask recipe now produces extra headers following
+  AIT requirements.
+- Note that while the user manual is now available, it is in a very
+  early stage and no efforts were taken to polish its style.
+
+v0.04.00 (2012-03-02):
+- New recipe muse_skyflat.
+  (Can be used to process the Twilight.fits raw file from the latest INM
+  datasets.)
+- Improvements to sky subtraction.
+- Quite a few new QC parameters.
+- An empricial correction of atmospheric refraction.
+- Changed installation directories, in line with other current ESO
+  pipelines.
+- Can use GAINRON_STAT as input file to other basic calibration recipes.
+- New schemes for cosmic ray detection, see README how to activate it.
+- Fix crash when running under MuseWISE.
+- Many small changes, see ChangeLog.
+
+v0.03.00 (2011-11-08), the big step forward:
+- too many changes to list them
+- the code can now handle the 10-exposure Fusion dataset (of Dec. 2010) as
+  well as the Pre-Dry Run 001 dataset (with the exception of sky subtraction).
+- all IFU lab data can be processed without problems
+
+v0.02.02 (2011-02-23):
+- fix critical typo in tracing
+
+v0.02.01 (2011-02-11):
+- tracing works in the presence of bad columns
+- use 4th order for tracing polynomial by default
+- improvements to dark pixel search on master flats
+- react to environment variables to handle and use overscans:
+  . MUSE_OVERSCAN_SIGMA_LIMIT: set this to a high value (> 5) to
+    override the discrepancy test of the overscan levels that cause the
+    pipeline to stop in case of varying bias levels
+  . MUSE_OVERSCAN_OFFSET_LEVEL: set this to 1 to use the overscan to
+    offset the bias level
+- instrumental R in muse_wavecal now gives correct numbers
+- new QC parameters QC.WAVECAL.SLICEi.DWLEN.{BOTTOM,TOP}
+- fix bug running with CPL 5.0.1
+
+v0.02.00 (2013-08-06):
+- Functional sky subtraction (muse_create_sky recipe).
+- Optimized tracing for better reconstructed images.
+- Use a GEOMETRY_TABLE when constructing the pixel table. (Use
+  mockdata/geometry_table.fits in the source tarball.)
+- Convert all data values from raw counts to electrons after subtracting
+  the bias. (Use the MUSE_GAINn environment variables in case the GAIN
+  value in the FITS headers is wrong, see README.)
+- Cosmic ray rejection.
+- Search for bad (dark) pixels on the master flat frames.
+- Overscan statistics and checks.
+- Use .fits for all files (before .tfits was used for tables).
+- Optional saving of output cube in Euro3D format.
+- Addition of the muse_quick_image recipe based on Arlette's instrument
+  software code.
+- Improved memory efficiency during resampling to cube.
+- Improved in-code documentation and documentation generation.
+- For testing purposes some extra recipes (split off from muse_scipost)
+  were added as well as a Python interface. These are unsupported.
+- The muse_focus recipe and a Python tool that are used for AIT are now
+  included. (They are not used in the scientific part of the pipeline.)
+- Removed all mock data and the cosmic ray library from the source tree
+  as we now use INM and lab data for testing.
+
+v0.01.01 (2010-04-26):
+- Removal of the optimize test program that gave problems on some
+  machines.
+- Add possibility to carry out flux calibration (with a pre-existing
+  or hand-crafted STD_RESPONSE) file.
+
+v0.01 (2010-03-17):
+- Much improved datacube creation, including bad pixels and variance
+  extensions.
+- Addition of a rudimentary muse_scipost recipe to easily create a final
+  datacube.
+- Creation of reconstructed images using some standard filter functions.
+- Fix slice positions within the field of view.
+- Improved arc line detection and matching, and hence better wavelength
+  calibration, especially when processing HgCd+Ne+Xe exposures together.
+- Bad column search in bias files and better bad pixel search in darks.
+- Check for saturation.
+- musept_dump program to display pixel tables.
+
+v0.00.10 (2009-10-30)
+
+v0.00.09 (2009-05-08)

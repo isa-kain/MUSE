@@ -1,0 +1,140 @@
+// This file contains the configuration of the Reflex Data Organizer
+// for the MUSE workflow
+//
+// This rule file defines classification, association and
+// action rules for the MUSE reflex workflow.
+
+//
+// Raw calibration data
+//
+
+
+//
+// Recipe products
+//
+
+
+
+// muse_scipost
+
+if INSTRUME == "MUSE" and PRO.CATG like "%DATACUBE%" and PRO.REC1.RAW1.CATG  == "OBJECT" then
+{
+    REFLEX.CATG = "DATACUBE_OBJECT";
+    PRO.CATG = "DATACUBE_OBJECT";
+    REFLEX.TARGET = "T";
+}
+
+if INSTRUME == "MUSE" and PRO.CATG like "%DATACUBE%" and PRO.REC1.RAW1.CATG  == "SKY" then
+{
+    REFLEX.CATG = "DATACUBE_SKY";
+    PRO.CATG = "DATACUBE_SKY";
+
+}
+
+if PRO.CATG like "%IMAGE_FOV%" and INSTRUME == "MUSE"  and PRO.REC1.RAW1.CATG  == "OBJECT" then
+{
+    REFLEX.CATG = "IMAGE_OBJECT";
+    PRO.CATG = "IMAGE_OBJECT";
+}
+
+if PRO.CATG like "%IMAGE_FOV%" and INSTRUME == "MUSE"  and PRO.REC1.RAW1.CATG  == "SKY" then
+{
+    REFLEX.CATG = "IMAGE_SKY";
+    PRO.CATG = "IMAGE_SKY";
+}
+
+if PRO.CATG == "MASK_FINAL_CUBE"  and PRO.REC1.RAW1.CATG  == "OBJECT" then
+{
+    REFLEX.CATG = "MASK_OBJECT";
+    PRO.CATG = "MASK_OBJECT";
+}
+ 
+if PRO.CATG == "MASK_FINAL_CUBE"   and PRO.REC1.RAW1.CATG  == "SKY" then
+{
+    REFLEX.CATG = "MASK_SKY";
+    PRO.CATG = "MASK_SKY";
+}
+ 
+
+//
+// Reflex workflow event rules
+//
+
+select execute(mask) from inputFiles 
+    where REFLEX.CATG  == "IMAGE_OBJECT" or  REFLEX.CATG  == "IMAGE_SKY" group by ARCFILE;
+
+select execute(skyres) from inputFiles 
+    where REFLEX.CATG == "DATACUBE_SKY"  group by ARCFILE;
+
+
+//select execute(target) from inputFiles 
+//    where REFLEX.CATG == "DATACUBE_OBJECT"  group by ARCFILE;
+
+select execute(datacube) from inputFiles 
+    where REFLEX.CATG == "DATACUBE_OBJECT"  group by ARCFILE;
+
+
+action mask
+{
+    minRet = 0; maxRet=1;
+    select file as MASK_FINAL_CUBE from calibFiles where REFLEX.CATG like "%MASK%"
+        and inputFile.MJD-OBS==MJD-OBS
+        and inputFile.INSTRUME==INSTRUME;
+   product MASK_FINAL_CUBE_WKF
+    {
+       REFLEX.CATG = "MASK_FINAL_CUBE_WKF";
+       PRO.CATG =  "MASK_FINAL_CUBE_WKF";
+    }
+   recipe mask;
+}
+
+action skyres
+{
+ minRet = 1 ; maxRet=1;
+ select file as MASK_SKY from calibFiles where REFLEX.CATG == "MASK_FINAL_CUBE_WKF"
+        and inputFile.MJD-OBS==MJD-OBS
+        and inputFile.INSTRUME==INSTRUME;
+   product ZAP_SDV
+    {
+       REFLEX.CATG = "ZAP_SDV";
+       PRO.CATG =  "ZAP_SDV";
+    }
+
+}
+action target
+{
+  product TO_ZAP
+    {
+       REFLEX.CATG = "TO_ZAP";
+       PRO.CATG =  "TO_ZAP";
+    }
+    }
+action datacube
+{
+
+  //  minRet = 1; maxRet=1;
+  //  select file as TO_ZAP  from calibFiles where REFLEX.CATG == "TO_ZAP";
+           
+	   
+    minRet = 0; maxRet=1;
+    select file as ZAP_SDV from calibFiles where REFLEX.CATG == "ZAP_SDV"
+        and OBJECT ==inputFile.OBJECT
+      ///  and TARG.NAME ==inputFile.TARG.NAME
+        and inputFile.INSTRUME==INSTRUME;
+
+ 
+    minRet = 1; maxRet=1;
+    select file as MASK_FINAL_CUBE from calibFiles where REFLEX.CATG == "MASK_FINAL_CUBE_WKF"
+        and inputFile.MJD-OBS==MJD-OBS
+        and inputFile.INSTRUME==INSTRUME;
+ 
+
+    product CUBE_CLEANED
+    {
+       REFLEX.CATG = "CUBE_CLEANED";
+       PRO.CATG =  "CUBE_CLEANED";
+    }
+
+ }
+
+
