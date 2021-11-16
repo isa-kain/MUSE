@@ -1,0 +1,14 @@
+
+Start time     : 2021-11-16T09:39:32
+Program name   : esorex
+Severity level : [ INFO  ] 
+
+09:39:32 [ INFO  ] : This is EsoRex, version 3.13.5
+09:39:32 [ INFO  ] : using the libraries: CPL = 7.1.4, CFITSIO = 3.49, WCSLIB = 7.4, FFTW (normal precision) = 3.3.10, FFTW (single precision) = 3.3.10, CPL FLOP counting is unavailable, enable with -DCPL_ADD_FLOPS
+09:39:32 [ INFO  ] : Invocation command line was: esorex muse_astrometry /Users/isabelkain/Desktop/MUSE/share/esopipes/datastatic/muse-2.8.5/astrometry_reference.fits
+09:39:32 [ INFO  ] muse_processing_recipeinfo: MUSE Instrument Pipeline v2.8.5
+09:39:32 [ ERROR ] muse_processing_get_rawtags: No valid raw tag(s) found!
+09:39:32 [ ERROR ] muse_astrometry_compute: Required input ASTROMETRY_REFERENCE not found in input files
+09:39:32 [ ERROR ] muse_cplerrorstate_dump_some: Dumping the 1 most recent error(s) out of a total of 1 errors:
+09:39:32 [ ERROR ] muse_cplerrorstate_dump_some:   [1/1] 'Null input data: ASTROMETRY_REFERENCE missing' (12) at muse_astrometry_compute:muse_astrometry.c:113
+09:39:32 [ ERROR ] : Execution of recipe 'muse_astrometry' failed, status = -1

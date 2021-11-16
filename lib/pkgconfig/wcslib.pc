@@ -1,0 +1,11 @@
+prefix=/Users/isabelkain/Desktop/MUSE
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include/wcslib
+
+Name: WCSLIB
+Description: An implementation of the FITS World Coordinate System standard
+Version: 7.6
+Requires:
+Libs: -L${libdir} -lwcs -lm
+Cflags: -I${includedir}

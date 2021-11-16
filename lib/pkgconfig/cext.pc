@@ -1,0 +1,11 @@
+prefix=/Users/isabelkain/Desktop/MUSE
+exec_prefix=${prefix}
+includedir=${prefix}/include
+libdir=${exec_prefix}/lib
+
+Name: cext
+Description: C Extension Library
+Version: 1.2.4
+Libs: -L${libdir} -lcext
+Libs.private: -lpthread 
+Cflags: -I${includedir}
